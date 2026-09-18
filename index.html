@@ -248,6 +248,57 @@ body.carregando #app-root{opacity:.28;pointer-events:none;}
   table{display:block;overflow-x:auto;white-space:nowrap;}
 }
 
+/* ========== CRM / FICHA 360 ========== */
+.crm-subtitle{color:var(--text-light);font-size:.9rem;margin-top:4px;line-height:1.45;}
+.crm-stats{display:grid;grid-template-columns:repeat(3,minmax(160px,1fr));gap:12px;margin-bottom:15px;}
+.crm-stat{background:#fff;border:1px solid #f0e5ef;border-radius:12px;padding:14px;box-shadow:0 2px 6px rgba(0,0,0,.05);}
+.crm-stat strong{display:block;font-size:1.35rem;color:var(--roxo);margin-bottom:3px;}
+.crm-stat span{font-size:.78rem;color:var(--text-light);}
+.crm-toolbar{display:grid;grid-template-columns:minmax(220px,1fr) 220px;gap:10px;margin-bottom:15px;}
+.crm-toolbar input,.crm-toolbar select{width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;background:#fff;}
+.crm-client-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(285px,1fr));gap:12px;}
+.crm-client-card{background:#fff;border:1px solid #eee;border-radius:12px;padding:15px;box-shadow:0 2px 7px rgba(0,0,0,.05);}
+.crm-client-card:hover{box-shadow:0 5px 16px rgba(0,0,0,.08);}
+.crm-card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:10px;}
+.crm-card-name{font-weight:700;font-size:1rem;color:#333;}
+.crm-card-meta{font-size:.8rem;color:#777;line-height:1.55;}
+.crm-card-opportunity{margin-top:10px;padding:10px;background:#fff8fb;border:1px solid #f6dbe8;border-radius:9px;font-size:.82rem;}
+.crm-card-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px;}
+.crm-pill{display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:999px;font-size:.72rem;font-weight:700;}
+.crm-pill.open{background:#fff3cd;color:#856404;}
+.crm-pill.budget{background:#e8f3ff;color:#2563a6;}
+.crm-pill.follow{background:#f3e8ff;color:#7b2fbf;}
+.crm-pill.scheduled{background:#d4edda;color:#155724;}
+.crm-pill.done{background:#e9ecef;color:#495057;}
+.crm-pill.pause{background:#f8d7da;color:#721c24;}
+.crm-360-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:15px;}
+.crm-summary-grid{display:grid;grid-template-columns:repeat(4,minmax(120px,1fr));gap:10px;margin-bottom:15px;}
+.crm-summary-box{padding:12px;border-radius:10px;background:#faf7fb;border:1px solid #eee;}
+.crm-summary-box small{display:block;color:#777;font-size:.72rem;margin-bottom:4px;}
+.crm-summary-box strong{font-size:.92rem;color:#333;}
+.crm-panel{background:#fff;border:1px solid #eee;border-radius:12px;padding:15px;}
+.crm-panel h4{color:var(--roxo);margin-bottom:12px;}
+.crm-interest-item{padding:11px;border:1px solid #eee;border-radius:9px;margin-bottom:9px;background:#fff;}
+.crm-interest-head{display:flex;justify-content:space-between;gap:8px;align-items:flex-start;}
+.crm-interest-title{font-weight:700;font-size:.9rem;}
+.crm-interest-meta{font-size:.76rem;color:#777;line-height:1.55;margin-top:6px;}
+.crm-interest-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+.crm-contact-item{padding:8px 0;border-bottom:1px solid #eee;font-size:.78rem;color:#666;}
+.crm-empty{padding:18px;text-align:center;color:#999;font-size:.84rem;background:#fafafa;border-radius:8px;}
+.crm-followup-due{border-left:4px solid #e0a800;}
+.crm-followup-late{border-left:4px solid #e74c3c;}
+.crm-followup-ok{border-left:4px solid #2ecc71;}
+.crm-field-help{display:block;color:#888;font-size:.72rem;margin-top:4px;line-height:1.4;}
+@media (max-width:768px){
+  .sidebar{display:flex;gap:6px;overflow-x:auto;white-space:nowrap;padding:8px;background:#fff;position:sticky;top:0;z-index:90;}
+  .sidebar .nav-item{flex:0 0 auto;padding:8px 10px;border-radius:8px;font-size:.8rem;}
+  .main-content{padding:14px;}
+  .crm-stats{grid-template-columns:1fr;}
+  .crm-toolbar{grid-template-columns:1fr;}
+  .crm-360-grid{grid-template-columns:1fr;}
+  .crm-summary-grid{grid-template-columns:repeat(2,1fr);}
+  .modal-content{width:96%;max-height:94vh;}
+}
 </style>
 </head>
 <body>
@@ -363,12 +414,29 @@ Os dados ficam salvos na nuvem e aparecem em qualquer aparelho — celular, tabl
 </section>
 
 <section id="clientes" class="section">
-<div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+<div style="margin-bottom:20px;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;">
+<div>
 <h2>Clientes</h2>
+<p class="crm-subtitle">Cadastro, histórico, interesses e próximas oportunidades em uma única visão.</p>
+</div>
 <button class="btn btn-primary" onclick="showModal('modal-cliente')"><i class="fas fa-plus"></i> Novo Cliente</button>
 </div>
+<div class="crm-stats">
+<div class="crm-stat"><strong id="crm-kpi-oportunidades">0</strong><span>Oportunidades abertas</span></div>
+<div class="crm-stat"><strong id="crm-kpi-retomar">0</strong><span>Contatos para hoje / atrasados</span></div>
+<div class="crm-stat"><strong id="crm-kpi-orcamentos">R$ 0,00</strong><span>Orçamentos em aberto</span></div>
+</div>
 <div class="card">
-<input type="text" id="search-cliente" placeholder="🔍 Buscar..." oninput="filterClientes()" style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 5px;">
+<div class="crm-toolbar">
+<input type="text" id="search-cliente" placeholder="🔍 Buscar por nome, telefone, e-mail ou interesse..." oninput="filterClientes()">
+<select id="filter-clientes-crm" onchange="filterClientes()">
+<option value="todos">Todos os clientes</option>
+<option value="oportunidades">Com oportunidade aberta</option>
+<option value="retomar">Retomar contato</option>
+<option value="reativacao">Reativação sem interesse prévio</option>
+<option value="semvisita">Sem procedimento concluído</option>
+</select>
+</div>
 <div id="clientes-list" class="empty-state"><i class="fas fa-users"></i><p>Nenhum cliente cadastrado</p></div>
 </div>
 </section>
@@ -478,6 +546,13 @@ Os dados ficam salvos na nuvem e aparecem em qualquer aparelho — celular, tabl
 <option value="15">Últimos 15 dias</option>
 <option value="60">Últimos 60 dias</option>
 </select>
+<select id="filter-oportunidade" onchange="renderFrequencia()" style="padding:8px;border-radius:5px;border:1px solid #ddd;">
+<option value="todas">Todas as oportunidades</option>
+<option value="abertas">Com oportunidade aberta</option>
+<option value="retomar">Contato hoje / atrasado</option>
+<option value="orcamento">Orçamento apresentado</option>
+<option value="reativacao">Reativação sem interesse prévio</option>
+</select>
 </div>
 <div id="clientes-frequencia-list" class="empty-state"><i class="fas fa-users"></i><p>Nenhum cliente</p></div>
 </div>
@@ -497,6 +572,16 @@ Os dados ficam salvos na nuvem e aparecem em qualquer aparelho — celular, tabl
 <h4 style="color: var(--roxo); margin-bottom: 8px;">✨ Novos Procedimentos</h4>
 <p style="font-size: 0.85rem;">Olá [NOME]! Temos [PROCEDIMENTO] novo! Gostaria de agendar? 💖</p>
 <button class="btn btn-whatsapp" onclick="copiarModelo(2)" style="padding: 4px 8px; font-size: 0.75rem; margin-top: 8px;"><i class="fas fa-copy"></i> Copiar</button>
+</div>
+<div style="background:var(--rosa-claro);padding:12px;border-radius:6px;border-left:3px solid #25D366;">
+<h4 style="color:var(--roxo);margin-bottom:8px;">💬 Retomada com interesse anterior</h4>
+<p style="font-size:.85rem;">Usa o procedimento realizado e o procedimento de interesse registrado na Ficha 360°.</p>
+<button class="btn btn-whatsapp" onclick="copiarModelo(3)" style="padding:4px 8px;font-size:.75rem;margin-top:8px;"><i class="fas fa-copy"></i> Copiar base</button>
+</div>
+<div style="background:var(--rosa-claro);padding:12px;border-radius:6px;border-left:3px solid #25D366;">
+<h4 style="color:var(--roxo);margin-bottom:8px;">🤍 Reativação sem interesse anterior</h4>
+<p style="font-size:.85rem;">Convite humanizado para avaliação, sem oferecer um procedimento específico.</p>
+<button class="btn btn-whatsapp" onclick="copiarModelo(4)" style="padding:4px 8px;font-size:.75rem;margin-top:8px;"><i class="fas fa-copy"></i> Copiar base</button>
 </div>
 </div>
 </div>
@@ -576,6 +661,56 @@ Os dados ficam salvos na nuvem e aparecem em qualquer aparelho — celular, tabl
 <button type="submit" class="btn btn-primary">Salvar</button>
 </div>
 </form>
+</div>
+</div>
+</div>
+
+<!-- MODAL FICHA 360 / CRM -->
+<div id="modal-cliente-360" class="modal">
+<div class="modal-content" style="max-width:980px;">
+<div class="modal-header">
+<div>
+<h3 id="crm360-titulo">Ficha 360°</h3>
+<div id="crm360-subtitulo" style="font-size:.78rem;color:#777;margin-top:3px;"></div>
+</div>
+<button class="modal-close" onclick="hideModal('modal-cliente-360')"><i class="fas fa-times"></i></button>
+</div>
+<div class="modal-body">
+<input type="hidden" id="crm-cliente-id">
+<input type="hidden" id="crm-interesse-id">
+<div class="crm-summary-grid">
+<div class="crm-summary-box"><small>Último procedimento</small><strong id="crm360-ultimo-proc">—</strong></div>
+<div class="crm-summary-box"><small>Última visita</small><strong id="crm360-ultima-visita">—</strong></div>
+<div class="crm-summary-box"><small>Atendimentos concluídos</small><strong id="crm360-atendimentos">0</strong></div>
+<div class="crm-summary-box"><small>Total realizado</small><strong id="crm360-total">R$ 0,00</strong></div>
+</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:15px;">
+<button type="button" class="btn btn-whatsapp" onclick="retomarContatoCliente(parseInt(document.getElementById('crm-cliente-id').value))"><i class="fab fa-whatsapp"></i> Retomar contato</button>
+<button type="button" class="btn btn-primary" onclick="novoAgendamentoCliente(parseInt(document.getElementById('crm-cliente-id').value))"><i class="fas fa-calendar-plus"></i> Novo agendamento</button>
+<button type="button" class="btn btn-secondary" onclick="editarCadastroDaFicha()"><i class="fas fa-user-edit"></i> Editar cadastro</button>
+</div>
+<div class="crm-360-grid">
+<div class="crm-panel">
+<h4><i class="fas fa-bullseye"></i> Interesses e oportunidades</h4>
+<div id="crm360-interesses"></div>
+</div>
+<div class="crm-panel">
+<h4><i class="fas fa-plus-circle"></i> Registrar interesse</h4>
+<div class="form-group"><label>Procedimento de interesse *</label><select id="crm-interesse-procedimento"><option value="">-- Selecione --</option></select></div>
+<div class="form-row">
+<div class="form-group"><label>Nível de interesse</label><select id="crm-interesse-nivel"><option value="alto">Alto</option><option value="medio" selected>Médio</option><option value="futuro">Futuro</option></select></div>
+<div class="form-group"><label>Status</label><select id="crm-interesse-status"><option value="interesse">Demonstrou interesse</option><option value="orcamento">Orçamento apresentado</option><option value="acompanhamento">Em acompanhamento</option><option value="agendado">Agendado</option><option value="realizado">Realizado</option><option value="nao_agora">Não deseja no momento</option></select></div>
+</div>
+<div class="form-row">
+<div class="form-group"><label>Valor do orçamento (R$)</label><input type="number" id="crm-interesse-valor" min="0" step="0.01" placeholder="0,00"></div>
+<div class="form-group"><label>Data do interesse</label><input type="date" id="crm-interesse-data"></div>
+</div>
+<div class="form-group"><label>Próximo contato</label><input type="date" id="crm-interesse-proximo"><span class="crm-field-help">Use para criar a fila diária de retomadas.</span></div>
+<div class="form-group"><label>Observação comercial</label><textarea id="crm-interesse-observacao" rows="3" placeholder="Ex.: pediu valores, quer fazer antes de um evento..."></textarea></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;"><button type="button" class="btn btn-primary" onclick="salvarInteresseCliente()"><i class="fas fa-save"></i> Salvar oportunidade</button><button type="button" class="btn btn-secondary" onclick="limparFormularioInteresse()">Limpar</button></div>
+</div>
+</div>
+<div class="crm-panel" style="margin-top:15px;"><h4><i class="fas fa-history"></i> Histórico de relacionamento</h4><div id="crm360-contatos"></div></div>
 </div>
 </div>
 </div>
@@ -1474,34 +1609,38 @@ return '<div style="padding:10px;border-bottom:1px solid #eee;display:flex;justi
 
 // ========== CLIENTES ==========
 function renderClientes() {
-const container = document.getElementById('clientes-list');
-if (clientes.length === 0) {
-container.innerHTML = '<div class="empty-state"><i class="fas fa-users"></i><p>Nenhum cliente cadastrado</p></div>';
-return;
+atualizarCrmKPIs();
+renderClientesLista(clientes);
 }
 
-container.innerHTML = '<table><thead><tr><th>Nome</th><th>Telefone</th><th>Frequência</th><th>Status</th><th>Ações</th></tr></thead><tbody>' +
-clientes.map(c => {
-const ultimos = agendamentos
-.filter(a => a.clienteId === c.id && a.status === 'completed')
-.sort((a, b) => new Date(b.data) - new Date(a.data));
-
-const hoje = new Date();
-const dias = ultimos.length > 0 ? Math.round((hoje - new Date(ultimos[0].data)) / (1000 * 60 * 60 * 24)) : 999;
-const diasEsp = getDiasPorFrequencia(c.frequencia);
-const status = dias > diasEsp ? 'inativa' : 'ativa';
-
-return '<tr>' +
-'<td>' + esc(c.nome) + '</td>' +
-'<td>' + formatPhone(c.telefone) + '</td>' +
-'<td>' + esc(c.frequencia || 'N/A') + '</td>' +
-'<td><span class="frequency-badge ' + status + '">' + (status === 'ativa' ? 'Ativa' : 'Inativa') + '</span></td>' +
-'<td><button class="btn btn-secondary" onclick="editCliente(' + c.id + ')" style="padding:4px 8px;font-size:0.75rem;"><i class="fas fa-edit"></i></button> ' +
-'<button class="btn ' + (c.contratoAssinado ? 'btn-secondary' : 'btn-primary') + '" onclick="abrirContrato(' + c.id + ')" title="Contrato" style="padding:4px 8px;font-size:0.75rem;"><i class="fas fa-file-signature"></i></button> ' +
-'<button class="btn btn-whatsapp" onclick="enviarWhatsApp(' + c.id + ')" style="padding:4px 8px;font-size:0.75rem;"><i class="fab fa-whatsapp"></i></button> ' +
-'<button class="btn btn-danger" onclick="deleteCliente(' + c.id + ')" style="padding:4px 8px;font-size:0.75rem;"><i class="fas fa-trash"></i></button></td>' +
-'</tr>';
-}).join('') + '</tbody></table>';
+function renderClientesLista(lista) {
+const container = document.getElementById('clientes-list');
+if (!container) return;
+if (!lista || lista.length === 0) {
+container.innerHTML = '<div class="empty-state"><i class="fas fa-users"></i><p>Nenhum cliente encontrado</p></div>';
+return;
+}
+container.innerHTML = '<div class="crm-client-grid">' + lista.map(c => {
+const resumo = getClienteResumo(c);
+const op = resumo.oportunidadesAbertas[0] || null;
+const opNome = op ? getNomeProcedimentoInteresse(op) : '';
+const prox = op && op.proximoContato ? formatDate(op.proximoContato) : '';
+const followClass = op && op.proximoContato ? getClassePrazoContato(op.proximoContato) : '';
+return '<div class="crm-client-card ' + followClass + '">' +
+'<div class="crm-card-top"><div><div class="crm-card-name">' + esc(c.nome) + '</div>' +
+'<div class="crm-card-meta">' + formatPhone(c.telefone) + (c.email ? '<br>' + esc(c.email) : '') + '</div></div>' +
+'<span class="frequency-badge ' + resumo.statusFrequencia + '">' + (resumo.statusFrequencia === 'ativa' ? 'Ativa' : 'Inativa') + '</span></div>' +
+'<div class="crm-card-meta"><strong>Último:</strong> ' + esc(resumo.ultimoProcedimento || 'Nenhum procedimento concluído') +
+(resumo.ultimaData ? '<br><strong>Data:</strong> ' + formatDate(resumo.ultimaData) : '') +
+'<br><strong>Atendimentos:</strong> ' + resumo.totalAtendimentos + ' &nbsp; <strong>Total:</strong> ' + formatCurrency(resumo.totalRealizado) + '</div>' +
+(op ? '<div class="crm-card-opportunity"><div><strong>Interesse:</strong> ' + esc(opNome || 'Procedimento') + '</div><div style="margin-top:5px;"><span class="crm-pill ' + getStatusOportunidadeClass(op.status) + '">' + getStatusOportunidadeLabel(op.status) + '</span>' + (op.nivel ? ' <span style="font-size:.73rem;color:#777;">' + esc(getNivelInteresseLabel(op.nivel)) + '</span>' : '') + '</div>' + (prox ? '<div style="margin-top:6px;"><strong>Próximo contato:</strong> ' + prox + '</div>' : '') + '</div>' :
+(resumo.totalAtendimentos > 0 ? '<div class="crm-card-opportunity"><strong>Reativação:</strong> cliente sem interesse adicional registrado. Convide para uma nova avaliação.</div>' : '<div class="crm-card-opportunity" style="color:#888;">Nenhuma oportunidade aberta registrada.</div>')) +
+'<div class="crm-card-actions">' +
+'<button class="btn btn-primary" onclick="abrirFichaCliente(' + c.id + ')"><i class="fas fa-address-card"></i> Ficha 360°</button>' +
+'<button class="btn btn-whatsapp" onclick="retomarContatoCliente(' + c.id + ')"><i class="fab fa-whatsapp"></i> ' + (op ? 'Retomar' : 'Reativar') + '</button>' +
+'<button class="btn btn-secondary" onclick="editCliente(' + c.id + ')" title="Editar cadastro"><i class="fas fa-edit"></i></button>' +
+'</div></div>';
+}).join('') + '</div>';
 }
 
 function saveCliente(event) {
@@ -1578,21 +1717,25 @@ populateSelects();
 }
 
 function filterClientes() {
-const search = document.getElementById('search-cliente').value.toLowerCase();
-const filtered = clientes.filter(c =>
-c.nome.toLowerCase().includes(search) ||
-c.telefone.includes(search) ||
-(c.email && c.email.toLowerCase().includes(search))
-);
-
-const container = document.getElementById('clientes-list');
-if (filtered.length === 0) {
-container.innerHTML = '<div class="empty-state"><i class="fas fa-search"></i><p>Nenhum cliente encontrado</p></div>';
-} else {
-container.innerHTML = '<table><thead><tr><th>Nome</th><th>Telefone</th><th>Frequência</th><th>Ações</th></tr></thead><tbody>' +
-filtered.map(c => '<tr><td>' + esc(c.nome) + '</td><td>' + formatPhone(c.telefone) + '</td><td>' + esc(c.frequencia || 'N/A') + '</td><td><button class="btn btn-secondary" onclick="editCliente(' + c.id + ')" style="padding:4px 8px;font-size:0.75rem;"><i class="fas fa-edit"></i></button> <button class="btn btn-danger" onclick="deleteCliente(' + c.id + ')" style="padding:4px 8px;font-size:0.75rem;"><i class="fas fa-trash"></i></button></td></tr>').join('') +
-'</tbody></table>';
-}
+const search = (document.getElementById('search-cliente').value || '').toLowerCase().trim();
+const filtro = document.getElementById('filter-clientes-crm') ? document.getElementById('filter-clientes-crm').value : 'todos';
+const hojeStr = new Date().toISOString().split('T')[0];
+const filtered = clientes.filter(c => {
+const resumo = getClienteResumo(c);
+const interessesTexto = (c.interesses || []).map(i => getNomeProcedimentoInteresse(i)).join(' ').toLowerCase();
+const bateBusca = !search ||
+(c.nome || '').toLowerCase().includes(search) ||
+(c.telefone || '').toLowerCase().includes(search) ||
+(c.email || '').toLowerCase().includes(search) ||
+interessesTexto.includes(search);
+if (!bateBusca) return false;
+if (filtro === 'oportunidades') return resumo.oportunidadesAbertas.length > 0;
+if (filtro === 'retomar') return resumo.oportunidadesAbertas.some(i => i.proximoContato && i.proximoContato <= hojeStr);
+if (filtro === 'reativacao') return resumo.totalAtendimentos > 0 && resumo.oportunidadesAbertas.length === 0;
+if (filtro === 'semvisita') return resumo.totalAtendimentos === 0;
+return true;
+});
+renderClientesLista(filtered);
 }
 
 function getDiasPorFrequencia(freq) {
@@ -1603,6 +1746,179 @@ case 'mensal': return 30;
 case 'bimestral': return 60;
 default: return configData.diasInativo || 60;
 }
+}
+
+// ========== CRM / FICHA 360 ==========
+function getStatusOportunidadeLabel(status) {
+const map = {interesse:'Demonstrou interesse',orcamento:'Orçamento apresentado',acompanhamento:'Em acompanhamento',agendado:'Agendado',realizado:'Realizado',nao_agora:'Não deseja agora'};
+return map[status] || 'Demonstrou interesse';
+}
+function getStatusOportunidadeClass(status) {
+const map = {interesse:'open',orcamento:'budget',acompanhamento:'follow',agendado:'scheduled',realizado:'done',nao_agora:'pause'};
+return map[status] || 'open';
+}
+function getNivelInteresseLabel(nivel) {
+const map = {alto:'Interesse alto',medio:'Interesse médio',futuro:'Interesse futuro'};
+return map[nivel] || '';
+}
+function getNomeProcedimentoInteresse(interesse) {
+if (!interesse) return '';
+if (interesse.procedimentoNome) return interesse.procedimentoNome;
+const p = procedimentos.find(pr => pr.id === parseInt(interesse.procedimentoId));
+return p ? p.nome : '';
+}
+function oportunidadeEstaAberta(i) {
+return i && i.status !== 'realizado' && i.status !== 'nao_agora';
+}
+function getClassePrazoContato(dataStr) {
+if (!dataStr) return '';
+const hoje = new Date().toISOString().split('T')[0];
+if (dataStr < hoje) return 'crm-followup-late';
+if (dataStr === hoje) return 'crm-followup-due';
+return 'crm-followup-ok';
+}
+function getClienteResumo(c) {
+const concluidos = agendamentos.filter(a => a.clienteId === c.id && a.status === 'completed').sort((a,b) => new Date(b.data) - new Date(a.data));
+const ultimo = concluidos[0] || null;
+const proc = ultimo ? procedimentos.find(p => p.id === ultimo.procedimentoId) : null;
+const total = concluidos.reduce((s,a) => s + (parseFloat(a.valor) || 0), 0);
+const diasEsp = getDiasPorFrequencia(c.frequencia);
+const dias = ultimo ? Math.round((new Date() - new Date(ultimo.data + 'T00:00:00')) / 86400000) : 999;
+const oportunidades = (c.interesses || []).filter(oportunidadeEstaAberta).sort((a,b) => {
+const pa = a.proximoContato || '9999-12-31', pb = b.proximoContato || '9999-12-31';
+if (pa !== pb) return pa.localeCompare(pb);
+const ordem = {alto:0,medio:1,futuro:2};
+return (ordem[a.nivel] ?? 9) - (ordem[b.nivel] ?? 9);
+});
+return {totalAtendimentos:concluidos.length,totalRealizado:total,ultimaData:ultimo ? ultimo.data : '',ultimoProcedimento:proc ? proc.nome : '',statusFrequencia:dias > diasEsp ? 'inativa' : 'ativa',diasDesdeUltimo:dias,oportunidadesAbertas:oportunidades};
+}
+function atualizarCrmKPIs() {
+const el = document.getElementById('crm-kpi-oportunidades');
+if (!el) return;
+const hoje = new Date().toISOString().split('T')[0];
+let abertas=0,retomar=0,orcamentos=0;
+clientes.forEach(c => (c.interesses || []).forEach(i => {
+if (!oportunidadeEstaAberta(i)) return;
+abertas++;
+if (i.proximoContato && i.proximoContato <= hoje) retomar++;
+if (i.status === 'orcamento') orcamentos += parseFloat(i.valorOrcamento) || 0;
+}));
+el.textContent = abertas;
+document.getElementById('crm-kpi-retomar').textContent = retomar;
+document.getElementById('crm-kpi-orcamentos').textContent = formatCurrency(orcamentos);
+}
+function abrirFichaCliente(clienteId) {
+const c = clientes.find(cl => cl.id === clienteId);
+if (!c) return;
+document.getElementById('crm-cliente-id').value = c.id;
+document.getElementById('crm360-titulo').textContent = c.nome;
+document.getElementById('crm360-subtitulo').textContent = formatPhone(c.telefone) + (c.email ? ' • ' + c.email : '');
+limparFormularioInteresse();
+renderFichaCliente(c.id);
+populateSelects();
+showModal('modal-cliente-360');
+}
+function renderFichaCliente(clienteId) {
+const c = clientes.find(cl => cl.id === clienteId);
+if (!c) return;
+const resumo = getClienteResumo(c);
+document.getElementById('crm360-ultimo-proc').textContent = resumo.ultimoProcedimento || '—';
+document.getElementById('crm360-ultima-visita').textContent = resumo.ultimaData ? formatDate(resumo.ultimaData) : 'Nunca';
+document.getElementById('crm360-atendimentos').textContent = resumo.totalAtendimentos;
+document.getElementById('crm360-total').textContent = formatCurrency(resumo.totalRealizado);
+const interesses = (c.interesses || []).slice().sort((a,b) => {
+const aa = oportunidadeEstaAberta(a) ? 0 : 1, bb = oportunidadeEstaAberta(b) ? 0 : 1;
+if (aa !== bb) return aa - bb;
+return (b.dataInteresse || '').localeCompare(a.dataInteresse || '');
+});
+const box = document.getElementById('crm360-interesses');
+box.innerHTML = interesses.length ? interesses.map(i => {
+const nome = getNomeProcedimentoInteresse(i) || 'Procedimento';
+return '<div class="crm-interest-item ' + (i.proximoContato ? getClassePrazoContato(i.proximoContato) : '') + '">' +
+'<div class="crm-interest-head"><div><div class="crm-interest-title">' + esc(nome) + '</div><div style="margin-top:5px;"><span class="crm-pill ' + getStatusOportunidadeClass(i.status) + '">' + getStatusOportunidadeLabel(i.status) + '</span></div></div>' +
+(i.valorOrcamento ? '<strong>' + formatCurrency(i.valorOrcamento) + '</strong>' : '') + '</div>' +
+'<div class="crm-interest-meta">' + (i.nivel ? getNivelInteresseLabel(i.nivel) : '') + (i.dataInteresse ? ' • Interesse em ' + formatDate(i.dataInteresse) : '') + (i.proximoContato ? '<br><strong>Próximo contato:</strong> ' + formatDate(i.proximoContato) : '') + (i.observacao ? '<br>' + esc(i.observacao) : '') + '</div>' +
+'<div class="crm-interest-actions"><button class="btn btn-whatsapp" onclick="retomarContatoCliente(' + c.id + ',' + i.id + ')"><i class="fab fa-whatsapp"></i> Retomar</button><button class="btn btn-secondary" onclick="editarInteresseCliente(' + c.id + ',' + i.id + ')"><i class="fas fa-edit"></i></button><button class="btn btn-danger" onclick="excluirInteresseCliente(' + c.id + ',' + i.id + ')"><i class="fas fa-trash"></i></button></div></div>';
+}).join('') : '<div class="crm-empty">Nenhum interesse registrado. Use o botão “Retomar contato” para convidar a cliente para uma nova avaliação.</div>';
+const contatos = (c.contatos || []).slice().sort((a,b) => (b.dataHora || '').localeCompare(a.dataHora || '')).slice(0,10);
+document.getElementById('crm360-contatos').innerHTML = contatos.length ? contatos.map(ct => '<div class="crm-contact-item"><strong>' + new Date(ct.dataHora).toLocaleString('pt-BR') + '</strong> — ' + esc(ct.descricao || ct.tipo || 'Contato') + '</div>').join('') : '<div class="crm-empty">Nenhum contato registrado ainda.</div>';
+}
+function limparFormularioInteresse() {
+const hoje = new Date().toISOString().split('T')[0];
+document.getElementById('crm-interesse-id').value = '';
+document.getElementById('crm-interesse-procedimento').value = '';
+document.getElementById('crm-interesse-nivel').value = 'medio';
+document.getElementById('crm-interesse-status').value = 'interesse';
+document.getElementById('crm-interesse-valor').value = '';
+document.getElementById('crm-interesse-data').value = hoje;
+document.getElementById('crm-interesse-proximo').value = '';
+document.getElementById('crm-interesse-observacao').value = '';
+}
+function salvarInteresseCliente() {
+const clienteId = parseInt(document.getElementById('crm-cliente-id').value);
+const c = clientes.find(cl => cl.id === clienteId);
+if (!c) return;
+const procId = parseInt(document.getElementById('crm-interesse-procedimento').value);
+if (!procId) { showToast('❌ Selecione o procedimento de interesse.', 'error'); return; }
+const p = procedimentos.find(pr => pr.id === procId);
+const editId = parseInt(document.getElementById('crm-interesse-id').value) || null;
+const obj = {id:editId || Date.now(),procedimentoId:procId,procedimentoNome:p ? p.nome : '',nivel:document.getElementById('crm-interesse-nivel').value,status:document.getElementById('crm-interesse-status').value,valorOrcamento:parseFloat(document.getElementById('crm-interesse-valor').value) || 0,dataInteresse:document.getElementById('crm-interesse-data').value || new Date().toISOString().split('T')[0],proximoContato:document.getElementById('crm-interesse-proximo').value || '',observacao:document.getElementById('crm-interesse-observacao').value.trim()};
+if (!Array.isArray(c.interesses)) c.interesses = [];
+if (editId) {
+const idx = c.interesses.findIndex(i => i.id === editId);
+if (idx >= 0) c.interesses[idx] = obj; else c.interesses.push(obj);
+} else c.interesses.push(obj);
+saveAllData(); limparFormularioInteresse(); renderFichaCliente(c.id); renderClientes(); showToast('✅ Oportunidade salva!');
+}
+function editarInteresseCliente(clienteId, interesseId) {
+const c = clientes.find(cl => cl.id === clienteId);
+const i = c && (c.interesses || []).find(x => x.id === interesseId);
+if (!i) return;
+document.getElementById('crm-interesse-id').value = i.id;
+populateSelects();
+document.getElementById('crm-interesse-procedimento').value = i.procedimentoId || '';
+document.getElementById('crm-interesse-nivel').value = i.nivel || 'medio';
+document.getElementById('crm-interesse-status').value = i.status || 'interesse';
+document.getElementById('crm-interesse-valor').value = i.valorOrcamento || '';
+document.getElementById('crm-interesse-data').value = i.dataInteresse || '';
+document.getElementById('crm-interesse-proximo').value = i.proximoContato || '';
+document.getElementById('crm-interesse-observacao').value = i.observacao || '';
+}
+function excluirInteresseCliente(clienteId, interesseId) {
+const c = clientes.find(cl => cl.id === clienteId);
+if (!c || !confirm('Excluir esta oportunidade?')) return;
+c.interesses = (c.interesses || []).filter(i => i.id !== interesseId);
+saveAllData(); renderFichaCliente(c.id); renderClientes(); showToast('✅ Oportunidade excluída.');
+}
+function montarMensagemRetomada(c, interesse) {
+const resumo = getClienteResumo(c);
+const realizado = resumo.ultimoProcedimento || '[PROCEDIMENTO REALIZADO]';
+if (interesse) {
+const interesseNome = getNomeProcedimentoInteresse(interesse) || '[PROCEDIMENTO DE INTERESSE]';
+return 'Oi, ' + c.nome + '! Tudo bem? 😊\n\nAqui é a Nathaly. Estava revisando o acompanhamento das minhas clientes e lembrei de você. 💛\n\nNa última vez em que esteve aqui na clínica, você realizou ' + realizado + ' e também conversamos um pouquinho sobre ' + interesseNome + '.\n\nQuis te chamar para saber como você está e também se aquele interesse ainda faz sentido para você hoje.\n\nCaso queira, posso te explicar novamente como funciona, avaliar o que seria mais indicado para o resultado que você procura e atualizar todas as informações para você, sem compromisso.\n\nSe quiser, me responde por aqui que conversamos com calma. 🥰\n\nNathaly';
+}
+return 'Oi, ' + c.nome + '! Tudo bem? 😊\n\nAqui é a Nathaly. Estava revisando o acompanhamento das minhas clientes e lembrei de você. 💛\n\nVi que na época você esteve aqui na clínica e realizou ' + realizado + ', e percebi que já faz um tempinho que não conversamos.\n\nQuis te chamar mais para saber como você está e como se sentiu com o resultado do procedimento.\n\nTambém gostaria de te convidar para vir até a clínica para fazermos uma avaliação personalizada, com calma, para entendermos como você está hoje, o que tem te incomodado ou o que gostaria de cuidar neste momento.\n\nA ideia não é você já vir decidida a fazer algum procedimento, tá? 😊 Primeiro quero te ouvir, avaliar e, caso faça sentido para você, te explicar as possibilidades que podem ajudar no resultado que procura.\n\nSe tiver vontade de vir conversar comigo, me responde por aqui que combinamos um horário. Vou adorar te receber novamente. 🥰\n\nNathaly';
+}
+function retomarContatoCliente(clienteId, interesseId) {
+const c = clientes.find(cl => cl.id === clienteId);
+if (!c) return;
+const abertas = (c.interesses || []).filter(oportunidadeEstaAberta);
+let interesse = interesseId ? abertas.find(i => i.id === interesseId) : null;
+if (!interesse) interesse = abertas.slice().sort((a,b) => (a.proximoContato || '9999-12-31').localeCompare(b.proximoContato || '9999-12-31'))[0] || null;
+const msg = montarMensagemRetomada(c, interesse);
+if (!Array.isArray(c.contatos)) c.contatos = [];
+c.contatos.push({id:Date.now(),dataHora:new Date().toISOString(),tipo:interesse ? 'retomada_interesse' : 'reativacao_avaliacao',interesseId:interesse ? interesse.id : null,descricao:interesse ? 'WhatsApp de retomada aberto — ' + getNomeProcedimentoInteresse(interesse) : 'WhatsApp de reativação para nova avaliação aberto'});
+saveAllData();
+if (document.getElementById('modal-cliente-360').classList.contains('active')) renderFichaCliente(c.id);
+const phone = (c.telefone || '').replace(/\D/g, '');
+window.open('https://wa.me/55' + phone + '?text=' + encodeURIComponent(msg), '_blank');
+showToast('✅ Mensagem personalizada pronta para ' + c.nome);
+}
+function novoAgendamentoCliente(clienteId) {
+hideModal('modal-cliente-360'); showSection('agenda'); populateSelects(); showModal('modal-agendamento'); document.getElementById('agendamento-cliente').value = clienteId;
+}
+function editarCadastroDaFicha() {
+const id = parseInt(document.getElementById('crm-cliente-id').value); hideModal('modal-cliente-360'); editCliente(id);
 }
 
 // ========== PROCEDIMENTOS ==========
@@ -2252,50 +2568,31 @@ document.getElementById('calculator-results').innerHTML = results;
 function renderFrequencia() {
 renderAniversariantes();
 const filterType = document.getElementById('filter-frequencia').value;
-const periodo = parseInt(document.getElementById('filter-periodo').value) || 30;
+const filtroOp = document.getElementById('filter-oportunidade') ? document.getElementById('filter-oportunidade').value : 'todas';
 const hoje = new Date();
-const dataLimite = new Date(hoje);
-dataLimite.setDate(dataLimite.getDate() - periodo);
-
+const hojeStr = hoje.toISOString().split('T')[0];
 let filtered = [];
 clientes.forEach(c => {
-const ultimos = agendamentos
-.filter(a => a.clienteId === c.id && a.status === 'completed')
-.sort((a, b) => new Date(b.data) - new Date(a.data));
-
-if (ultimos.length === 0) {
-if (filterType === 'todos' || filterType === 'inativos') {
-filtered.push({ ...c, status: 'inativa', ultima: 'Nunca', dias: 999 });
-}
-return;
-}
-
-const ultimaData = new Date(ultimos[0].data);
-const dias = Math.round((hoje - ultimaData) / (1000 * 60 * 60 * 24));
-const diasEsp = getDiasPorFrequencia(c.frequencia);
-const status = dias > diasEsp ? 'inativa' : 'ativa';
-
-if (filterType === 'todos' || filterType === status) {
-filtered.push({ ...c, status: status, ultima: formatDate(ultimos[0].data), dias: dias });
-}
+const resumo = getClienteResumo(c);
+const ultimos = agendamentos.filter(a => a.clienteId === c.id && a.status === 'completed').sort((a,b) => new Date(b.data) - new Date(a.data));
+const ultima = ultimos.length ? formatDate(ultimos[0].data) : 'Nunca';
+const dias = ultimos.length ? Math.round((hoje - new Date(ultimos[0].data + 'T00:00:00')) / 86400000) : 999;
+const status = resumo.statusFrequencia;
+if (!(filterType === 'todos' || filterType === status)) return;
+const ops = resumo.oportunidadesAbertas;
+if (filtroOp === 'abertas' && !ops.length) return;
+if (filtroOp === 'retomar' && !ops.some(i => i.proximoContato && i.proximoContato <= hojeStr)) return;
+if (filtroOp === 'orcamento' && !ops.some(i => i.status === 'orcamento')) return;
+if (filtroOp === 'reativacao' && !(resumo.totalAtendimentos > 0 && ops.length === 0)) return;
+filtered.push({...c,status,ultima,dias,ops});
 });
-
 const container = document.getElementById('clientes-frequencia-list');
-if (filtered.length === 0) {
-container.innerHTML = '<div class="empty-state"><i class="fas fa-users"></i><p>Nenhum cliente encontrado</p></div>';
-return;
-}
-
-container.innerHTML = '<table><thead><tr><th>Nome</th><th>Telefone</th><th>Frequência</th><th>Última</th><th>Dias</th><th>Status</th><th>Ações</th></tr></thead><tbody>' +
-filtered.map(c => '<tr>' +
-'<td>' + esc(c.nome) + '</td>' +
-'<td>' + formatPhone(c.telefone) + '</td>' +
-'<td>' + esc(c.frequencia || 'N/A') + '</td>' +
-'<td>' + c.ultima + '</td>' +
-'<td>' + c.dias + '</td>' +
-'<td><span class="frequency-badge ' + c.status + '">' + (c.status === 'ativa' ? 'Ativa' : 'Inativa') + '</span></td>' +
-'<td><button class="btn btn-whatsapp" onclick="enviarWhatsApp(' + c.id + ')" style="padding:4px 8px;font-size:0.75rem;"><i class="fab fa-whatsapp"></i></button></td>' +
-'</tr>').join('') + '</tbody></table>';
+if (!filtered.length) { container.innerHTML = '<div class="empty-state"><i class="fas fa-users"></i><p>Nenhum cliente encontrado</p></div>'; return; }
+container.innerHTML = '<table><thead><tr><th>Nome</th><th>Última</th><th>Dias</th><th>Status</th><th>Oportunidade</th><th>Próximo contato</th><th>Ações</th></tr></thead><tbody>' +
+filtered.map(c => {
+const op = c.ops[0] || null;
+return '<tr><td><strong>' + esc(c.nome) + '</strong><br><small>' + formatPhone(c.telefone) + '</small></td><td>' + c.ultima + '</td><td>' + c.dias + '</td><td><span class="frequency-badge ' + c.status + '">' + (c.status === 'ativa' ? 'Ativa' : 'Inativa') + '</span></td><td>' + (op ? '<span class="crm-pill ' + getStatusOportunidadeClass(op.status) + '">' + esc(getNomeProcedimentoInteresse(op)) + '</span>' : (getClienteResumo(c).totalAtendimentos > 0 ? 'Reativação' : '—')) + '</td><td>' + (op && op.proximoContato ? formatDate(op.proximoContato) : '—') + '</td><td><button class="btn btn-primary" onclick="abrirFichaCliente(' + c.id + ')" style="padding:4px 8px;font-size:.75rem;"><i class="fas fa-address-card"></i></button> <button class="btn btn-whatsapp" onclick="retomarContatoCliente(' + c.id + ')" style="padding:4px 8px;font-size:.75rem;"><i class="fab fa-whatsapp"></i></button></td></tr>';
+}).join('') + '</tbody></table>';
 }
 
 // ========== ANIVERSARIANTES ==========
@@ -2374,6 +2671,8 @@ let texto = '';
 switch(tipo) {
 case 1: texto = 'Olá [NOME]! Lembrete: [PROCEDIMENTO] em [DATA] às [HORA]. Confirme por favor! 😊'; break;
 case 2: texto = 'Olá [NOME]! Temos [PROCEDIMENTO] novo! Gostaria de agendar? 💖'; break;
+case 3: texto = 'Oi, [NOME]! Tudo bem? 😊\n\nAqui é a Nathaly. Estava revisando o acompanhamento das minhas clientes e lembrei de você. 💛\n\nNa última vez em que esteve aqui na clínica, você realizou [PROCEDIMENTO REALIZADO] e também conversamos um pouquinho sobre [PROCEDIMENTO DE INTERESSE].\n\nQuis te chamar para saber como você está e também se aquele interesse ainda faz sentido para você hoje.\n\nSe quiser, me responde por aqui que conversamos com calma. 🥰'; break;
+case 4: texto = 'Oi, [NOME]! Tudo bem? 😊\n\nAqui é a Nathaly. Estava revisando o acompanhamento das minhas clientes e lembrei de você. 💛\n\nVi que na época você esteve aqui na clínica e realizou [PROCEDIMENTO REALIZADO], e percebi que já faz um tempinho que não conversamos.\n\nQuis te chamar para saber como você está e também te convidar para uma avaliação personalizada, com calma, para entendermos o que faz sentido para você hoje.\n\nA ideia não é você já vir decidida a fazer algum procedimento. Primeiro quero te ouvir e avaliar. 🥰'; break;
 }
 navigator.clipboard.writeText(texto).then(() => {
 showToast('✅ Modelo copiado!');
@@ -2411,6 +2710,19 @@ option.value = f.id;
 option.textContent = f.nome;
 fornecedorSelect.appendChild(option);
 });
+}
+
+const crmProcSelect = document.getElementById('crm-interesse-procedimento');
+if (crmProcSelect) {
+const atual = crmProcSelect.value;
+crmProcSelect.innerHTML = '<option value="">-- Selecione --</option>';
+procedimentos.forEach(p => {
+const option = document.createElement('option');
+option.value = p.id;
+option.textContent = p.nome;
+crmProcSelect.appendChild(option);
+});
+if (atual) crmProcSelect.value = atual;
 }
 
 const contratoClienteSelect = document.getElementById('contrato-cliente-select');
