@@ -2561,7 +2561,7 @@ if (jaTemDono && codigoConvite) perfil.codigoUsado = codigoConvite;
 
 const gravarPerfil = cloudDb.collection('users').doc(user.uid).set(perfil);
 const chain = jaTemDono ? gravarPerfil
-: cloudDb.collection('users').doc('_meta').set({ count: 1, criadoEm: new Date().toISOString() })
+: cloudDb.collection('users').doc('_meta').set({ count: 1, ownerUid: user.uid, criadoEm: new Date().toISOString() })
     .then(function(){ return gravarPerfil; });
 
 return chain.then(function(){
