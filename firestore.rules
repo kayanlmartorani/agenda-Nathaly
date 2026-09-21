@@ -1,0 +1,141 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function userPath(uid) {
+      return /databases/$(database)/documents/users/$(uid);
+    }
+
+    function myUserExists() {
+      return signedIn() && exists(userPath(request.auth.uid));
+    }
+
+    function myRole() {
+      return myUserExists() ? get(userPath(request.auth.uid)).data.role : null;
+    }
+
+    function isAdmin() {
+      return myRole() == 'admin';
+    }
+
+    function isTeam() {
+      return myRole() in ['admin', 'equipe'];
+    }
+
+    function invitePath(code) {
+      return /databases/$(database)/documents/convites/$(code);
+    }
+
+    function validInvite(code) {
+      return signedIn()
+        && code is string
+        && exists(invitePath(code))
+        && get(invitePath(code)).data.usado == false
+        && get(invitePath(code)).data.validoAte is int
+        && get(invitePath(code)).data.validoAte > request.time.toMillis();
+    }
+
+    match /users/_meta {
+      // A tela consulta este documento antes de criar a conta.
+      // Ele contém apenas estado técnico de bootstrap; nunca dados clínicos.
+      allow read: if true;
+
+      allow create: if signedIn()
+        && !exists(/databases/$(database)/documents/users/_meta)
+        && request.resource.data.count == 1
+        && request.resource.data.ownerUid == request.auth.uid;
+
+      allow update, delete: if false;
+    }
+
+    match /users/{uid} {
+      allow read: if uid != '_meta'
+        && signedIn()
+        && (request.auth.uid == uid || isAdmin());
+
+      // Primeiro administrador: somente o UID que acabou de registrar o
+      // documento de bootstrap pode criar a si próprio como admin.
+      // Demais usuários nascem pendentes e precisam de convite válido.
+      allow create: if uid != '_meta'
+        && signedIn()
+        && request.auth.uid == uid
+        && (
+          (
+            exists(/databases/$(database)/documents/users/_meta)
+            && get(/databases/$(database)/documents/users/_meta).data.ownerUid == request.auth.uid
+            && request.resource.data.role == 'admin'
+          )
+          ||
+          (
+            request.resource.data.role == 'pendente'
+            && request.resource.data.codigoUsado is string
+            && validInvite(request.resource.data.codigoUsado)
+          )
+        );
+
+      allow update, delete: if uid != '_meta' && isAdmin();
+    }
+
+    match /convites/{code} {
+      allow read: if isAdmin()
+        || (
+          signedIn()
+          && exists(userPath(request.auth.uid))
+          && get(userPath(request.auth.uid)).data.codigoUsado == code
+        );
+
+      allow create, delete: if isAdmin();
+
+      // O próprio usuário só pode marcar como usado o convite associado
+      // ao seu perfil; qualquer outra alteração continua exclusiva do admin.
+      allow update: if isAdmin()
+        || (
+          signedIn()
+          && exists(userPath(request.auth.uid))
+          && get(userPath(request.auth.uid)).data.codigoUsado == code
+          && resource.data.usado == false
+          && request.resource.data.usado == true
+          && request.resource.data.criadoPor == resource.data.criadoPor
+          && request.resource.data.criadoEm == resource.data.criadoEm
+          && request.resource.data.validoAte == resource.data.validoAte
+          && request.resource.data.usadoPor == request.auth.token.email
+        );
+    }
+
+    // Dados operacionais: somente equipe aprovada.
+    match /clientes/{docId} {
+      allow read, create, update: if isTeam();
+      allow delete: if isAdmin();
+    }
+
+    match /procedimentos/{docId} {
+      allow read, write: if isTeam();
+    }
+
+    match /agendamentos/{docId} {
+      allow read, write: if isTeam();
+    }
+
+    match /produtos/{docId} {
+      allow read, write: if isTeam();
+    }
+
+    match /fornecedores/{docId} {
+      allow read, write: if isTeam();
+    }
+
+    match /config/{docId} {
+      allow read: if isTeam();
+      allow write: if isAdmin();
+    }
+
+    // Negar por padrão tudo que não foi explicitamente autorizado.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
